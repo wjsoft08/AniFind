@@ -108,8 +108,8 @@ export default class MoreInfoScreen extends React.Component {
 
 
     renderSelectedTab(selectedTab) {
-        const { id, type, isLoading, itemInfo, similarList } = this.state;
-        const { navigate } = this.props.navigation;
+        const { isLoading, itemInfo, similarList } = this.state;
+        const { Navigation } = this.props.navigation.state.params;
         switch (selectedTab) {
             case 'About':
                 return (
@@ -133,7 +133,7 @@ export default class MoreInfoScreen extends React.Component {
                 return (
                     <SimilarTab
                         SimilarList={similarList}
-                        navigation={navigate}
+                        Navigation={Navigation}
                     />
                 );
             default:

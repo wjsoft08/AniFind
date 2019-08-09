@@ -42,6 +42,7 @@ export default class ListScreen extends React.Component {
             let responseList = [];
             callResponse.data.forEach((data) => {
                 responseList.push({
+                    id: data.id,
                     title: data.attributes.canonicalTitle, 
                     rating: data.attributes.averageRating, 
                     type: data.type, 
@@ -61,6 +62,7 @@ export default class ListScreen extends React.Component {
 
 
     renderPreviewCard = (data) => {
+        const { Navigation } = this.props.navigation.state.params;
         return (
             <PreviewCard
                 Title={data.item.title}
@@ -68,6 +70,11 @@ export default class ListScreen extends React.Component {
                 Type={data.item.type}
                 ImageURI={data.item.imageURI}
                 Episodes={data.item.episodeCount}
+                CardPressed={() => Navigation.navigate("MoreInfoScreen", {
+                    id: data.item.id,
+                    type: data.item.type,
+                    Navigation: Navigation,
+                })}
             />
         )
     }

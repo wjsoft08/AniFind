@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Image, ScrollView, Animated, FlatList } from 'r
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import PreviewCard from '../components/PreviewCard';
 import { Constants } from 'expo';
+import CategoryPreview from './../components/CategoryPreview';
 
 const keyExtractor = item => item.title;
 
@@ -22,17 +23,6 @@ export default class MangaScreen extends React.Component {
             upcomingMangaList: [],
         };
 
-        const trendingAnime = 'https://kitsu.io/api/edge/trending/anime';
-        const popularityRankAnime = 'https://kitsu.io/api/edge/anime?page[limit]=10&filter&sort=popularityRank';
-        const currentPopularityRankAnime = 'https://kitsu.io/api/edge/anime?page[limit]=10&filter[status]=current&sort=popularityRank';
-        const upcomingAnime = 'https://kitsu.io/api/edge/anime?page[limit]=10&filter[status]=upcoming&sort=-averageRating,popularityRank';
-        const genres = 'https://kitsu.io/api/edge/genres?page[limit]=20';
-        const totalMediaCount = 'https://kitsu.io/api/edge/categories?sort=-totalMediaCount';
-        const trendingManga = 'https://kitsu.io/api/edge/trending/manga';
-        const popularityRankManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter&sort=popularityRank';
-        const currentPopularityRankManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter[status]=current&sort=popularityRank';
-        const upcomingManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter[status]=upcoming&sort=-averageRating,popularityRank';
-        const user = 'https://kitsu.io/api/edge/users?page[limit]=20';
     }
 
     componentDidMount() {
@@ -44,10 +34,11 @@ export default class MangaScreen extends React.Component {
             let trendingMangaList = [];
             trendingMangaResponse.data.forEach((data) => {
                 trendingMangaList.push({
-                    title: data.attributes.canonicalTitle, 
-                    rating: data.attributes.averageRating, 
-                    type: data.type, 
-                    imageURI: data.attributes.posterImage.small, 
+                    id: data.id,
+                    title: data.attributes.canonicalTitle,
+                    rating: data.attributes.averageRating,
+                    type: data.type,
+                    imageURI: data.attributes.posterImage.small,
                     episodeCount: data.attributes.episodeCount
                 })
             })
@@ -58,10 +49,11 @@ export default class MangaScreen extends React.Component {
             let ongoingMangaList = [];
             ongoingMangaResponse.data.forEach((data) => {
                 ongoingMangaList.push({
-                    title: data.attributes.canonicalTitle, 
-                    rating: data.attributes.averageRating, 
-                    type: data.type, 
-                    imageURI: data.attributes.posterImage.small, 
+                    id: data.id,
+                    title: data.attributes.canonicalTitle,
+                    rating: data.attributes.averageRating,
+                    type: data.type,
+                    imageURI: data.attributes.posterImage.small,
                     episodeCount: data.attributes.episodeCount
                 })
             })
@@ -72,10 +64,11 @@ export default class MangaScreen extends React.Component {
             let mostPopularMangaList = [];
             mostPopularMangaResponse.data.forEach((data) => {
                 mostPopularMangaList.push({
-                    title: data.attributes.canonicalTitle, 
-                    rating: data.attributes.averageRating, 
-                    type: data.type, 
-                    imageURI: data.attributes.posterImage.small, 
+                    id: data.id,
+                    title: data.attributes.canonicalTitle,
+                    rating: data.attributes.averageRating,
+                    type: data.type,
+                    imageURI: data.attributes.posterImage.small,
                     episodeCount: data.attributes.episodeCount
                 })
             })
@@ -98,7 +91,7 @@ export default class MangaScreen extends React.Component {
                 trendingMangaList: trendingMangaList,
                 ongoingMangaList: ongoingMangaList,
                 mostPopularMangaList: mostPopularMangaList,
-            //    upcomingMangaList: upcomingMangaList,
+                //    upcomingMangaList: upcomingMangaList,
             })
         }
 
@@ -119,6 +112,7 @@ export default class MangaScreen extends React.Component {
     }
 
     render() {
+        const { navigation } = this.props;
         const headerContentOp = this.state.scrollY.interpolate({
             inputRange: [0, 28, 38],
             outputRange: [0, 0, 1]
@@ -151,57 +145,32 @@ export default class MangaScreen extends React.Component {
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>Manga</Text>
                     </View>
-                    <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Trending Manga</Text>
-                    </View>
-                    <FlatList
-                        data={this.state.trendingMangaList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
+
+                    <CategoryPreview
+                        Name='Trending Manga'
+                        Data={this.state.trendingMangaList}
+                        Type='Manga'
+                        SeeMoreLink='https://kitsu.io/api/edge/trending/manga'
+                        Navigation={navigation}
                     />
 
-                    <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Top On-going Manga</Text>
-                    </View>
-                    <FlatList
-                        data={this.state.ongoingMangaList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
+                    <CategoryPreview
+                        Name='Top On-going Manga'
+                        Data={this.state.ongoingMangaList}
+                        Type='Manga'
+                        SeeMoreLink='https://kitsu.io/api/edge/manga?page[limit]=20&filter[status]=current&sort=popularityRank'
+                        Navigation={navigation}
                     />
 
-                    <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Most Popular Manga</Text>
-                    </View>
-                    <FlatList
-                        data={this.state.mostPopularMangaList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
+                    <CategoryPreview
+                        Name='Most Popular Manga'
+                        Data={this.state.mostPopularMangaList}
+                        Type='Manga'
+                        SeeMoreLink='https://kitsu.io/api/edge/manga?page[limit]=10&filter&sort=popularityRank'
+                        Navigation={navigation}
                     />
 
-                    {/* <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Upcoming Manga</Text>
-                    </View>
-                    <FlatList
-                        data={this.state.upcomingMangaList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
-                    /> */}
+
                 </Animated.ScrollView>
 
             </View >

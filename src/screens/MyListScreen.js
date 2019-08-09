@@ -47,10 +47,10 @@ export default class MyListScreen extends React.Component {
                             }
                         }
                     } catch (error) {
-                        console.log(error);
+                  //      console.log(error);
                     }
                   })
-
+                  console.log("set state")
                   this.setState({
                     myAnimeList: myAnimeList,
                     myMangaList: myMangaList,
@@ -70,7 +70,7 @@ export default class MyListScreen extends React.Component {
 
 
     renderPreviewCard = (data) => {
-        console.log(data.item.attributes.canonicalTitle)
+        console.log(data.item.type)
         return (
             <PreviewCard
                 Title={data.item.attributes.canonicalTitle}
@@ -121,6 +121,16 @@ export default class MyListScreen extends React.Component {
                         keyExtractor={keyExtractor}
                         renderItem={this.renderPreviewCard}
                         horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        inverted={false}
+                        extraData={this.state}
+                    />
+
+                    <FlatList
+                        data={this.state.myMangaList}
+                        keyExtractor={keyExtractor}
+                        renderItem={this.renderPreviewCard}
+                        horizontal={false}
                         showsHorizontalScrollIndicator={false}
                         inverted={false}
                         extraData={this.state}

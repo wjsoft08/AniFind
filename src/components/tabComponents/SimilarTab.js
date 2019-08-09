@@ -9,13 +9,13 @@ export default class SimalarTab extends React.Component {
 
     static propTypes = {
         SimilarList: PropTypes.array,
-        navigation: PropTypes.any
+        Navigate: PropTypes.any
     }
 
 
+
     renderPreviewCard = (data) => {
-        const { navigation: { navigate } } = this.props;
-        console.log(data.item)
+        const { Navigation } = this.props;
         return (
             <PreviewCard
                 Title={data.item.title}
@@ -23,9 +23,10 @@ export default class SimalarTab extends React.Component {
                 Type={data.item.type}
                 ImageURI={data.item.imageURI}
                 Episodes={data.item.episodeCount}
-                CardPressed={() => navigate("MoreInfoScreen", {
+                CardPressed={() => Navigation.push("MoreInfoScreen", {
                     id: data.item.id,
                     type: data.item.type,
+                    Navigation: Navigation,
                 })}
             />
         )

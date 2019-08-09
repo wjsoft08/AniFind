@@ -96,24 +96,6 @@ const tabBarNavigation = createBottomTabNavigator(
         MyListScreen: {
             screen: MyListScreens,
         }
-        // MapScreen: {
-        //     screen: MapScreen,
-        //     navigationOptions: {
-        //         tabBarIcon: getTabBarIcon('map')
-        //     },
-        // },
-        // GroupScreen: {
-        //     screen: GroupScreen,
-        //     navigationOptions: {
-        //         tabBarIcon: getTabBarIcon('people')
-        //     },
-        // },
-        // UserScreen: {
-        //     screen: UserScreen,
-        //     navigationOptions: {
-        //         tabBarIcon: getTabBarIcon('person-outline')
-        //     },
-        // },
     },
     {
         initialRouteName: 'AnimeScreen',

@@ -13,10 +13,8 @@ export default class CategoryPreview extends React.Component {
         super(props);
     }
 
-
     renderPreviewCard = (data) => {
-        const { Navigate } = this.props;
-        console.log(data.item)
+        const { Navigation } = this.props;
         return (
             <PreviewCard
                 Title={data.item.title}
@@ -24,25 +22,27 @@ export default class CategoryPreview extends React.Component {
                 Type={data.item.type}
                 ImageURI={data.item.imageURI}
                 Episodes={data.item.episodeCount}
-                CardPressed={() => Navigate("MoreInfoScreen", {
+                CardPressed={() => Navigation.navigate("MoreInfoScreen", {
                     id: data.item.id,
                     type: data.item.type,
+                    Navigation: Navigation,
                 })}
             />
         )
     }
 
     render() {
-        const { Name, Data, Navigate, Type, SeeMoreLink } = this.props
+        const { Name, Data, Navigation, Type, SeeMoreLink } = this.props
         return (
             <View style={styles.container}>
                 <View style={styles.subHeadingContainer}>
                     <Text style={styles.subHeading}>{Name}</Text>
-                    <TouchableOpacity onPress={() => Navigate("ListScreen", {
+                    <TouchableOpacity onPress={() => Navigation.navigate("ListScreen", {
                         Title: Type,
                         SubtTitle: Name,
                         Type: Type,
                         Uri: SeeMoreLink,
+                        Navigation: Navigation,
                     })}>
                         <Text style={styles.subHeading}>SEE MORE</Text>
                     </TouchableOpacity>
@@ -68,7 +68,7 @@ PreviewCard.propTypes = {
     Data: PropTypes.array,
     Type: PropTypes.string,
     SeeMoreLink: PropTypes.string,
-    Navigate: PropTypes.any,
+    Navigation: PropTypes.any,
 };
 
 const styles = StyleSheet.create({

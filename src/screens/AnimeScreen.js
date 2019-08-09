@@ -129,7 +129,7 @@ export default class AnimeScreen extends React.Component {
     }
 
     render() {
-        const { navigation: { navigate } } = this.props;
+        const { navigation } = this.props;
         const headerContentOp = this.state.scrollY.interpolate({
             inputRange: [0, 28, 38],
             outputRange: [0, 0, 1]
@@ -162,33 +162,12 @@ export default class AnimeScreen extends React.Component {
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>Anime</Text>
                     </View>
-                    {/* <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Trending Anime</Text>
-                        <TouchableOpacity onPress={() => navigate("ListScreen", {
-                            Title: "Anime",
-                            SubtTitle: "Trending Anime",
-                            Type: "Anime",
-                            Uri: "https://kitsu.io/api/edge/trending/anime",
-                        })}>
-                            <Text style={styles.subHeading}>SEE MORE</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        data={this.state.trendingList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
-                    /> */}
-
                     <CategoryPreview 
                         Name='Trending Anime'
                         Data={this.state.trendingList}
                         Type='Anime'
                         SeeMoreLink='https://kitsu.io/api/edge/trending/anime'
-                        Navigate={navigate}
+                        Navigation={navigation}
                     />
 
                     <CategoryPreview 
@@ -196,71 +175,25 @@ export default class AnimeScreen extends React.Component {
                         Data={this.state.ongoingList}
                         Type='Anime'
                         SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=current&sort=popularityRank'
-                        Navigate={navigate}
+                        Navigation={navigation}
                     />
 
-                    <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Top On-going Anime</Text>
-                        <TouchableOpacity onPress={() => navigate("ListScreen", {
-                            Title: "Anime",
-                            SubtTitle: "Top On-going Anime",
-                            Type: "Anime",
-                            Uri: "https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=current&sort=popularityRank",
-                        })}>
-                            <Text style={styles.subHeading}>SEE MORE</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        data={this.state.ongoingList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
+                    <CategoryPreview 
+                        Name='Most Popular Anime'
+                        Data={this.state.mostPopularList}
+                        Type='Anime'
+                        SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter&sort=popularityRank'
+                        Navigation={navigation}
                     />
 
-                    <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Most Popular Anime</Text>
-                        <TouchableOpacity onPress={() => navigate("ListScreen", {
-                            Title: "Anime",
-                            SubtTitle: "Most Popular Anime",
-                            Type: "Anime",
-                            Uri: "https://kitsu.io/api/edge/anime?page[limit]=20&filter&sort=popularityRank",
-                        })}>
-                            <Text style={styles.subHeading}>SEE MORE</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        data={this.state.mostPopularList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
+                    <CategoryPreview 
+                        Name='Upcoming Anime'
+                        Data={this.state.upcomingAnimeList}
+                        Type='Anime'
+                        SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=upcoming&sort=-averageRating,popularityRank'
+                        Navigation={navigation}
                     />
 
-                    <View style={styles.subHeadingContainer}>
-                        <Text style={styles.subHeading}>Upcoming Anime</Text>
-                        <TouchableOpacity onPress={() => navigate("ListScreen", {
-                            Title: "Anime",
-                            SubtTitle: "Upcoming Anime",
-                            Type: "Anime",
-                            Uri: "https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=upcoming&sort=-averageRating,popularityRank",
-                        })}>
-                            <Text style={styles.subHeading}>SEE MORE</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        data={this.state.upcomingAnimeList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
-                    />
                 </Animated.ScrollView>
             </View >
         );
