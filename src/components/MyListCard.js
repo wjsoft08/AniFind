@@ -1,13 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, Image, } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Image, Dimensions } from 'react-native';
 import PropTypes from 'prop-types';
-import { Feather } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { Tooltip } from 'react-native-elements';
 
 
 const keyExtractor = item => item.id.toString();
 
-export default class PreviewCard extends React.Component {
+export default class MyListCard extends React.Component {
 
     state = {
         editVisible: false,
@@ -17,35 +17,23 @@ export default class PreviewCard extends React.Component {
     }
 
     render() {
-        const { Title, Rating, Type, Episodes, ImageURI, CardPressed } = this.props
+        const { Title, Rating, Type, Status, ImageURI, CardPressed, DeletePressed } = this.props
         return (
+
             <TouchableOpacity onPress={CardPressed} underlayColor={"white"} style={styles.cardsContainer} >
                 <View style={[styles.cardBox]}>
                     <Image
-                        // defaultSource={require("./../../assets/error-image-generic.png")}
                         source={{ uri: ImageURI, }}
-                        style={[styles.previewImage]} />
-                    <View style={styles.previewInfoContainer}>
-                        <View style={styles.titleContainer}>
-                            <Text numberOfLines={2} style={[styles.titleText]}>{Title}</Text>
-                        </View>
-                        <View style={styles.infoButtonContainer}>
-
-                            <Tooltip 
-                                popover={
-                                    <View>
-                                        <Text style={styles.titleText}>Rating: {Rating}%</Text>
-                                        <Text style={styles.titleText}>Episodes: {Episodes}</Text>
-                                    </View>
-                                }
-                                height={50}
-                                withOverlay={false}
-                                backgroundColor={"#757575"}
-                            >
-                                <Feather name="info" size={22} style={{ color: "#dbdbdb", }} />
-                            </Tooltip>
-                        </View>
+                        style={[styles.avatar, { backgroundColor: 'white' }]} />
+                    <View style={{ flex: 1, flexDirection: 'column' }}>
+                        <Text numberOfLines={2} style={[styles.titleText]}>{Title}</Text>
+                        <Text style={[styles.infoText]}>{Type}</Text>
+                        <Text style={[styles.infoText]}>{Rating}%</Text>
+                        <Text style={[styles.infoText]}>Status: {Status}</Text>
                     </View>
+                    <TouchableOpacity onPress={DeletePressed} underlayColor={"white"} style={styles.deleteButton} >
+                        <AntDesign name="delete" size={24} color="#ff3c00" />
+                    </TouchableOpacity>
                 </View>
             </TouchableOpacity>
         );
@@ -53,54 +41,57 @@ export default class PreviewCard extends React.Component {
 }
 
 
-PreviewCard.propTypes = {
+MyListCard.propTypes = {
     Title: PropTypes.string.isRequired,
     Rating: PropTypes.string,
     Type: PropTypes.string,
     ImageURI: PropTypes.string,
-    CardPressed: PropTypes.func
+    CardPressed: PropTypes.func,
+    DeletePressed: PropTypes.func,
 };
 
 const styles = StyleSheet.create({
+    titleText: {
+        fontSize: 16,
+        marginTop: 10,
+        marginHorizontal: 10,
+        color: 'white'
+    },
     cardsContainer: {
         flex: 1,
-        flexDirection: "column",
+        flexDirection: "row",
         justifyContent: "flex-start",
     },
     cardBox: {
         flex: 1,
-        height: 175,
-        width: 120,
-        flexDirection: "column",
-        borderRadius: 3,
+        flexDirection: "row",
         overflow: 'hidden',
-        marginHorizontal: 5,
-        backgroundColor: "#1f1f1f",
-        marginBottom: 20,
+        borderBottomColor: "#bbb",
+        backgroundColor: "#262626",
+        borderBottomWidth: StyleSheet.hairlineWidth,
     },
-    previewImage: {
-        width: 120,
-        height: 135,
-        backgroundColor: 'black',
+    avatar: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderColor: '#555',
+        borderWidth: 2,
+        backgroundColor: '#1f1f1f',
+        marginLeft: 10,
+        marginVertical: 5,
     },
     titleText: {
-        fontSize: 14,
+        fontSize: 16,
+        marginTop: 10,
         marginHorizontal: 10,
         color: 'white'
     },
-    previewInfoContainer: {
-        flex: 1,
-        flexDirection: 'row',
+    infoText: {
+        fontSize: 14,
+        marginHorizontal: 10,
+        color: '#a8a8a8',
     },
-    titleContainer: {
-        flex: 1,
-        height: 40,
-        width: 90,
-    },
-    infoButtonContainer: {
-        height: 40,
-        width: 30,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
+    deleteButton: {
+        margin: 10,
+    }
 })

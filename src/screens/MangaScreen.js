@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, Animated, FlatList } from 'react-native';
+import { StyleSheet, View, Text, Image, ActivityIndicator, Animated, FlatList } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import PreviewCard from '../components/PreviewCard';
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 import CategoryPreview from './../components/CategoryPreview';
 
 const keyExtractor = item => item.title;
@@ -21,6 +21,7 @@ export default class MangaScreen extends React.Component {
             ongoingMangaList: [],
             mostPopularList: [],
             upcomingMangaList: [],
+            isLoading: true,
         };
 
     }
@@ -92,6 +93,7 @@ export default class MangaScreen extends React.Component {
                 ongoingMangaList: ongoingMangaList,
                 mostPopularMangaList: mostPopularMangaList,
                 //    upcomingMangaList: upcomingMangaList,
+                isLoading: false,
             })
         }
 
@@ -145,31 +147,37 @@ export default class MangaScreen extends React.Component {
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>Manga</Text>
                     </View>
+                    {this.state.isLoading ?
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <ActivityIndicator size="large" color="#ffffff" />
+                        </View>
+                        :
+                        <View>
+                            <CategoryPreview
+                                Name='Trending Manga'
+                                Data={this.state.trendingMangaList}
+                                Type='Manga'
+                                SeeMoreLink='https://kitsu.io/api/edge/trending/manga'
+                                Navigation={navigation}
+                            />
 
-                    <CategoryPreview
-                        Name='Trending Manga'
-                        Data={this.state.trendingMangaList}
-                        Type='Manga'
-                        SeeMoreLink='https://kitsu.io/api/edge/trending/manga'
-                        Navigation={navigation}
-                    />
+                            <CategoryPreview
+                                Name='Top On-going Manga'
+                                Data={this.state.ongoingMangaList}
+                                Type='Manga'
+                                SeeMoreLink='https://kitsu.io/api/edge/manga?page[limit]=20&filter[status]=current&sort=popularityRank'
+                                Navigation={navigation}
+                            />
 
-                    <CategoryPreview
-                        Name='Top On-going Manga'
-                        Data={this.state.ongoingMangaList}
-                        Type='Manga'
-                        SeeMoreLink='https://kitsu.io/api/edge/manga?page[limit]=20&filter[status]=current&sort=popularityRank'
-                        Navigation={navigation}
-                    />
-
-                    <CategoryPreview
-                        Name='Most Popular Manga'
-                        Data={this.state.mostPopularMangaList}
-                        Type='Manga'
-                        SeeMoreLink='https://kitsu.io/api/edge/manga?page[limit]=10&filter&sort=popularityRank'
-                        Navigation={navigation}
-                    />
-
+                            <CategoryPreview
+                                Name='Most Popular Manga'
+                                Data={this.state.mostPopularMangaList}
+                                Type='Manga'
+                                SeeMoreLink='https://kitsu.io/api/edge/manga?page[limit]=10&filter&sort=popularityRank'
+                                Navigation={navigation}
+                            />
+                        </View>
+                    }
 
                 </Animated.ScrollView>
 

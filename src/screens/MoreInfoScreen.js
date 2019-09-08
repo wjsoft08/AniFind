@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, Animated, Image, AsyncStorage, TouchableOpacity, ActivityIndicator, Dimensions, ToastAndroid, Linking } from 'react-native';
 import React from 'react'
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 import TabBar from '../components/TabBar';
 //import { CacheManager } from "react-native-expo-image-cache";
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import AboutTab from '../components/tabComponents/AboutTab';
 import DetailsTab from '../components/tabComponents/DetailsTab';
 import SimilarTab from '../components/tabComponents/SimilarTab';
@@ -39,25 +39,28 @@ export default class MoreInfoScreen extends React.Component {
                 .then((infoResponse) => infoResponse.json());
 
 
-
+            //fix incase there is no genre data yet
             genreResponse = await fetch(`https://kitsu.io/api/edge/${type}/${id}/genres`)
                 .then((genreResponse) => genreResponse.json());
 
-            similarResponse = await fetch(`https://kitsu.io/api/edge/${type}?page[limit]=10&filter[genres]=${genreResponse.data[0].attributes.name}&filter[genres]=${genreResponse.data[1].attributes.name}&filter[genres]=${genreResponse.data[2].attributes.name}&sort=-averageRating,popularityRank`)
-                .then((similarResponse) => similarResponse.json());
-
+            console.log(genreResponse.meta.count)
             let similarList = [];
-            similarResponse.data.forEach((data) => {
-                similarList.push({
-                    id: data.id,
-                    type: data.type,
-                    title: data.attributes.canonicalTitle,
-                    rating: data.attributes.averageRating,
-                    imageURI: data.attributes.posterImage.small,
-                    episodeCount: data.attributes.episodeCount
-                })
-            })
 
+            if (genreResponse.meta.count >= 3) {
+                similarResponse = await fetch(`https://kitsu.io/api/edge/${type}?page[limit]=9&filter[genres]=${genreResponse.data[0].attributes.name}&filter[genres]=${genreResponse.data[1].attributes.name}&filter[genres]=${genreResponse.data[2].attributes.name}&sort=-averageRating,popularityRank`)
+                    .then((similarResponse) => similarResponse.json());
+
+                similarResponse.data.forEach((data) => {
+                    similarList.push({
+                        id: data.id,
+                        type: data.type,
+                        title: data.attributes.canonicalTitle,
+                        rating: data.attributes.averageRating,
+                        imageURI: data.attributes.posterImage.small,
+                        episodeCount: data.attributes.episodeCount
+                    })
+                })
+            }
             this.setState({
                 itemInfo: infoResponse,
                 isLoading: false,
@@ -84,7 +87,7 @@ export default class MoreInfoScreen extends React.Component {
                     Linking.openURL("https://www.youtube.com/watch?v=" + itemInfo.data.attributes.youtubeVideoId)
                 }
             });
-            } catch (error) {
+        } catch (error) {
             console.log(error)
         }
     }
@@ -152,9 +155,15 @@ export default class MoreInfoScreen extends React.Component {
 
         return (
             <View style={styles.container}>
+            <View style={styles.staticHeader}>
+                    <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.goBack()}>
+                        <Ionicons name="ios-arrow-back" size={32} color="white" />
+                    </TouchableOpacity>
+                </View>
                 {isLoading ?
-                    <View>
-                    </View>
+                    <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                </View>
                     :
                     <View style={{ flex: 1 }}>
                         <Animated.View
@@ -285,5 +294,20 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-start',
+    },
+    backButton: {
+        flex:1,
+        marginLeft: 20,
+    },
+    staticHeader: {
+        width: "100%",
+        position: "absolute",
+        height: 56 + Constants.statusBarHeight,
+        zIndex: 12,
+        paddingTop: Constants.statusBarHeight,
+        alignItems: "center",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
     },
 })

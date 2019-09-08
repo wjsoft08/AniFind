@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Image, FlatList } from 'react-native';
 import PropTypes from 'prop-types';
 import PreviewCard from './PreviewCard';
-import { Constants } from 'expo'
+import Constants from 'expo-constants';
 
 
 const keyExtractor = item => item.id.toString();

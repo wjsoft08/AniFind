@@ -1,9 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, Animated, FlatList } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { StyleSheet, View, Text, Image, ActivityIndicator, Animated, TouchableOpacity, TextInput } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import PreviewCard from './../components/PreviewCard';
-import { Constants } from 'expo'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import Constants from 'expo-constants';
 import CategoryPreview from './../components/CategoryPreview';
 
 const keyExtractor = item => item.title;
@@ -21,6 +20,9 @@ export default class AnimeScreen extends React.Component {
             trendingList: [],
             ongoingList: [],
             mostPopularList: [],
+            isLoading: true,
+            searchText: '',
+            searchSelected: false,
         };
 
         const trendingAnime = 'https://kitsu.io/api/edge/trending/anime';
@@ -34,6 +36,7 @@ export default class AnimeScreen extends React.Component {
         const currentPopularityRankManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter[status]=current&sort=popularityRank';
         const upcomingManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter[status]=upcoming&sort=-averageRating,popularityRank';
         const user = 'https://kitsu.io/api/edge/users?page[limit]=20';
+        let search = 'https://kitsu.io/api/edge/anime?filter[text]=';
     }
 
     componentDidMount() {
@@ -104,12 +107,24 @@ export default class AnimeScreen extends React.Component {
                 ongoingList: ongoingList,
                 mostPopularList: mostPopularList,
                 upcomingAnimeList: upcomingAnimeList,
+                isLoading: false,
             })
         }
 
         callApi();
     }
 
+    searchPressed = () => {
+        if (this.state.searchSelected) {
+            this.setState({
+                searchSelected: false,
+            })
+        } else {
+            this.setState({
+                searchSelected: true,
+            })
+        }
+    }
 
     renderPreviewCard = (data) => {
         const { navigation: { navigate } } = this.props;
@@ -139,11 +154,32 @@ export default class AnimeScreen extends React.Component {
                 <Animated.View
                     style={styles.animatedHeaderContainer}
                 >
-                    <Animated.View style={{ zIndex: 3, opacity: headerContentOp, flexDirection: "column", alignItems: "center", justifyContent: "flex-start", }} >
-                        <Text style={styles.animatedHeaderTitle}>
-                            Anime
-                        </Text>
-                    </Animated.View>
+                    {this.state.searchSelected ?
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-start', alignItems: "center", }}>
+                            <TouchableOpacity onPress={this.searchPressed} underlayColor={"white"} style={styles.searchIcon}>
+                                <FontAwesome name="search" size={28} style={{ color: "#dbdbdb", }} />
+                            </TouchableOpacity>
+                            <TextInput
+                                style={{ flex: 1, height: 40, borderColor: 'gray', borderWidth: 1, paddingHorizontal: 10 }}
+                                onChangeText={text => this.setState({ searchText: text })}
+                                value={this.state.searchText}
+                            />
+                        </View>
+                        :
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: "center", }}>
+                            <TouchableOpacity onPress={this.searchPressed} underlayColor={"white"} style={[styles.searchIcon, {flex: 1}]}>
+                                <FontAwesome name="search" size={28} style={{ color: "#dbdbdb", }} />
+                            </TouchableOpacity>
+                            <Animated.View style={{ flex: 1, zIndex: 3, opacity: headerContentOp, flexDirection: "column", alignItems: "center", justifyContent: "flex-start", }} >
+                                <Text style={styles.animatedHeaderTitle}>
+                                    Anime
+                                </Text>
+                            </Animated.View>
+                            <View
+                                style={{ flex: 1, paddingRight: 10 }}>
+                            </View>
+                        </View>
+                    }
                 </Animated.View>
 
                 <Animated.ScrollView style={styles.container}
@@ -162,38 +198,45 @@ export default class AnimeScreen extends React.Component {
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>Anime</Text>
                     </View>
-                    <CategoryPreview 
-                        Name='Trending Anime'
-                        Data={this.state.trendingList}
-                        Type='Anime'
-                        SeeMoreLink='https://kitsu.io/api/edge/trending/anime'
-                        Navigation={navigation}
-                    />
+                    {this.state.isLoading ?
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <ActivityIndicator size="large" color="#ffffff" />
+                        </View>
+                        :
+                        <View>
+                            <CategoryPreview
+                                Name='Trending Anime'
+                                Data={this.state.trendingList}
+                                Type='Anime'
+                                SeeMoreLink='https://kitsu.io/api/edge/trending/anime'
+                                Navigation={navigation}
+                            />
 
-                    <CategoryPreview 
-                        Name='Top On-going Anime'
-                        Data={this.state.ongoingList}
-                        Type='Anime'
-                        SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=current&sort=popularityRank'
-                        Navigation={navigation}
-                    />
+                            <CategoryPreview
+                                Name='Top On-going Anime'
+                                Data={this.state.ongoingList}
+                                Type='Anime'
+                                SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=current&sort=popularityRank'
+                                Navigation={navigation}
+                            />
 
-                    <CategoryPreview 
-                        Name='Most Popular Anime'
-                        Data={this.state.mostPopularList}
-                        Type='Anime'
-                        SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter&sort=popularityRank'
-                        Navigation={navigation}
-                    />
+                            <CategoryPreview
+                                Name='Most Popular Anime'
+                                Data={this.state.mostPopularList}
+                                Type='Anime'
+                                SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter&sort=popularityRank'
+                                Navigation={navigation}
+                            />
 
-                    <CategoryPreview 
-                        Name='Upcoming Anime'
-                        Data={this.state.upcomingAnimeList}
-                        Type='Anime'
-                        SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=upcoming&sort=-averageRating,popularityRank'
-                        Navigation={navigation}
-                    />
-
+                            <CategoryPreview
+                                Name='Upcoming Anime'
+                                Data={this.state.upcomingAnimeList}
+                                Type='Anime'
+                                SeeMoreLink='https://kitsu.io/api/edge/anime?page[limit]=20&filter[status]=upcoming&sort=-averageRating,popularityRank'
+                                Navigation={navigation}
+                            />
+                        </View>
+                    }
                 </Animated.ScrollView>
             </View >
         );
@@ -223,6 +266,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 10,
         fontWeight: "bold"
+    },
+    searchIcon: {
+        padding: 10,
     },
     titleContainer: {
         marginHorizontal: 10,

@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, Animated, FlatList } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Animated, FlatList } from 'react-native';
 import PreviewCard from './../components/PreviewCard';
-import { Constants } from 'expo'
+import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
+import { Ionicons } from '@expo/vector-icons';
 
 const keyExtractor = item => item.title;
 
@@ -17,19 +18,8 @@ export default class ListScreen extends React.Component {
         this.state = {
             scrollY: new Animated.Value(0),
             responseList: [],
+            isLoading: true,
         };
-
-        const trendingAnime = 'https://kitsu.io/api/edge/trending/anime';
-        const popularityRankAnime = 'https://kitsu.io/api/edge/anime?page[limit]=10&filter&sort=popularityRank';
-        const currentPopularityRankAnime = 'https://kitsu.io/api/edge/anime?page[limit]=10&filter[status]=current&sort=popularityRank';
-        const upcomingAnime = 'https://kitsu.io/api/edge/anime?page[limit]=10&filter[status]=upcoming&sort=-averageRating,popularityRank';
-        const genres = 'https://kitsu.io/api/edge/genres?page[limit]=20';
-        const totalMediaCount = 'https://kitsu.io/api/edge/categories?sort=-totalMediaCount';
-        const trendingManga = 'https://kitsu.io/api/edge/trending/manga';
-        const popularityRankManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter&sort=popularityRank';
-        const currentPopularityRankManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter[status]=current&sort=popularityRank';
-        const upcomingManga = 'https://kitsu.io/api/edge/manga?page[limit]=10&filter[status]=upcoming&sort=-averageRating,popularityRank';
-        const user = 'https://kitsu.io/api/edge/users?page[limit]=20';
     }
 
     componentDidMount() {
@@ -54,6 +44,7 @@ export default class ListScreen extends React.Component {
 
             this.setState({
                 responseList: responseList,
+                isLoading: false,
             })
         }
 
@@ -87,6 +78,11 @@ export default class ListScreen extends React.Component {
         });
         return (
             <View style={{ flex: 1 }}>
+            <View style={styles.staticHeader}>
+                    <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.goBack()}>
+                        <Ionicons name="ios-arrow-back" size={32} color="white" />
+                    </TouchableOpacity>
+                </View>
                 <Animated.View
                     style={styles.animatedHeaderContainer}
                 >
@@ -117,6 +113,11 @@ export default class ListScreen extends React.Component {
                     <View style={styles.subHeadingContainer}>
                         <Text style={styles.subHeading}>{SubtTitle}</Text>
                     </View>
+                    {this.state.isLoading ?
+                        <View style={{ flex: 1, justifyContent: 'center'}}>
+                            <ActivityIndicator size="large" color="#ffffff" />
+                        </View>
+                        :
                     <FlatList
                         data={this.state.responseList}
                         keyExtractor={keyExtractor}
@@ -126,6 +127,7 @@ export default class ListScreen extends React.Component {
                         inverted={false}
                         extraData={this.state}
                     />
+                    }
                 </Animated.ScrollView>
             </View >
         );
@@ -185,5 +187,20 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'normal',
         color: 'white',
+    },
+    backButton: {
+        flex:1,
+        marginLeft: 20,
+    },
+    staticHeader: {
+        width: "100%",
+        position: "absolute",
+        height: 56 + Constants.statusBarHeight,
+        zIndex: 12,
+        paddingTop: Constants.statusBarHeight,
+        alignItems: "center",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
     },
 })

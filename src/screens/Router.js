@@ -57,6 +57,9 @@ const MangaScreenStack = createStackNavigator(
         MoreInfoScreen: {
             screen: MoreInfoScreen,
         },
+        ListScreen: {
+            screen: ListScreen
+        },
     },
     {
         initialRouteName: 'MangaScreen',
@@ -74,6 +77,9 @@ const MyListScreens = createStackNavigator(
         },
         MoreInfoScreen: {
             screen: MoreInfoScreen,
+        },
+        ListScreen: {
+            screen: ListScreen
         },
     },
     {

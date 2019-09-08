@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, Animated, FlatList, AsyncStorage } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, Animated, FlatList, AsyncStorage, ToastAndroid } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import PreviewCard from '../components/PreviewCard';
+import MyListCard from '../components/MyListCard';
 import { Constants } from 'expo'
 
 const keyExtractor = item => item.attributes.canonicalTitle;
@@ -18,6 +18,7 @@ export default class MyListScreen extends React.Component {
             scrollY: new Animated.Value(0),
             myAnimeList: [],
             myMangaList: [],
+            trendingList: [],
         };
 
 
@@ -25,59 +26,72 @@ export default class MyListScreen extends React.Component {
 
     async asyncForEach(array, callback) {
         for (let index = 0; index < array.length; index++) {
-          await callback(array[index], index, array);
+            await callback(array[index], index, array);
         }
     }
-    
-    componentDidMount() {
-        const loadData = async () => {
-            try {
-                let keys = await AsyncStorage.getAllKeys();
-                let myAnimeList = [];
-                let myMangaList = [];
-                this.asyncForEach(keys, async (result) => {
-                    let nameSplit = result.split("_");
-                    try {
-                        const value = await AsyncStorage.getItem(result);
-                        if (value !== null) {
-                            if(nameSplit[0] === "anime") {
-                                myAnimeList.push(JSON.parse(value));
-                            } else if (nameSplit[0] === "manga") {
-                                myMangaList.push(JSON.parse(value));
-                            }
-                        }
-                    } catch (error) {
-                  //      console.log(error);
-                    }
-                  })
-                  console.log("set state")
-                  this.setState({
-                    myAnimeList: myAnimeList,
-                    myMangaList: myMangaList,
-                  })
-               
-            } catch (error) {
-                // Error saving data
-            }
 
-            // this.setState({
-            //     responseList: responseList,
-            // })
+    componentDidMount() {
+        this.loadSavedLists();
+    }
+
+    loadSavedLists = async () => {
+        let keys = await AsyncStorage.getAllKeys();
+        let myAnimeList = [];
+        let myMangaList = [];
+        let list = ["hi", "there", "sup"];
+
+        const nestedPromise = async (items = []) => {
+            return await Promise.all(
+                items.map(async item => {
+                    let nameSplit = item.split("_");
+                    if (item !== null) {
+                        const value = await AsyncStorage.getItem(item);
+                        if (nameSplit[0] === "anime") {
+                            return JSON.parse(value)
+                        } else if (nameSplit[0] === "manga") {
+                            return JSON.parse(value)
+                        }
+                    }
+                })
+            )
         }
 
-        loadData();
+        const savedItems = await nestedPromise(keys);
+        this.setState({
+            myAnimeList: savedItems,
+            //        myMangaList: myMangaList,
+        })
+    }
+
+    deletePressed = async (data) => {
+        await AsyncStorage.removeItem(`${data.item.type}_${data.item.id}_${data.item.attributes.canonicalTitle}`)
+        this.loadSavedLists();
+        ToastAndroid.showWithGravityAndOffset(
+            `${data.item.attributes.canonicalTitle} removed`,
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+            0,
+            150
+        );
     }
 
 
     renderPreviewCard = (data) => {
-        console.log(data.item.type)
+        const { navigation } = this.props;
+        const { navigation: { navigate } } = this.props;
         return (
-            <PreviewCard
+            <MyListCard
                 Title={data.item.attributes.canonicalTitle}
                 Rating={data.item.attributes.averageRating}
-                Type={data.item.type}
+                Type={data.item.attributes.subtype}
                 ImageURI={data.item.attributes.posterImage.small}
-                Episodes={data.item.attributes.episodeCount}
+                Status={data.item.attributes.status}
+                DeletePressed={() => this.deletePressed(data)}
+                CardPressed={() => navigate("MoreInfoScreen", {
+                    id: data.item.id,
+                    type: data.item.type,
+                    Navigation: navigation,
+                })}
             />
         )
     }
@@ -120,22 +134,11 @@ export default class MyListScreen extends React.Component {
                         data={this.state.myAnimeList}
                         keyExtractor={keyExtractor}
                         renderItem={this.renderPreviewCard}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        inverted={false}
-                        extraData={this.state}
-                    />
-
-                    <FlatList
-                        data={this.state.myMangaList}
-                        keyExtractor={keyExtractor}
-                        renderItem={this.renderPreviewCard}
                         horizontal={false}
                         showsHorizontalScrollIndicator={false}
                         inverted={false}
                         extraData={this.state}
                     />
-
 
                 </Animated.ScrollView>
             </View >
